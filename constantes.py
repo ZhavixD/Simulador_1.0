@@ -1,5 +1,6 @@
 # tamanos
 ANCHO, ALTO = 800, 600
+PERSONAJE_SIZE = 40
 
 #colores
 WHITE = (255, 255, 255)

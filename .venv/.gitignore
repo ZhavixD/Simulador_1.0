@@ -1,0 +1,4 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+# This file is placed under version control to avoid creating a virtual environment
+# inside another virtual environment.
+venv/
