@@ -23,7 +23,7 @@ def main():
     character = Character(constantes.ANCHO // 2, constantes.ALTO // 2) # Aparece en medio del mundo
 
     while True:
-        for event in pygame.event.get():
+        for event in pygame.event.get(): #hola
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
