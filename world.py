@@ -35,18 +35,48 @@ class World:
         
         
     def update_time(self,dt):
+        
         self.current_time = (self.current_time + dt) % constantes.DAY_LENGTH
         
+        alpha = 0
+        
         # Calcular el nivel de oscuridad basado en la hora del día
+        
         if constantes.MORNING_TIME <= self.current_time < constantes.DUSK_TIME:
+            
             # Durante el día (8:00 a 18:00)
+            
             self.day_overlay.fill(constantes.DAY_COLOR)
+            
             alpha = 0
+            
         elif constantes.DAWN_TIME <= self.current_time < constantes.MORNING_TIME:
+            
             # Amanecer (6:00 a 8:00)
-            self.day_overlay.fill(constantes.DAWN_DUSK_COLOR) 
+            
+            self.day_overlay.fill(constantes.NIGHT_COLOR) 
+            
             morning_progress = (self.current_time - constantes.DAWN_TIME) / (constantes.MORNING_TIME - constantes.DAWN_TIME)
+            
             alpha = int(constantes.MAX_DARKNESS * (1 - morning_progress))
+            
+        elif constantes.DUSK_TIME <= self.current_time < constantes.MIDNIGHT:
+            
+            # Atardecer (18:00 a 24:00)
+            
+            self.day_overlay.fill(constantes.NIGHT_COLOR)
+            
+            night_progress = (self.current_time - constantes.DUSK_TIME) / (constantes.MIDNIGHT - constantes.DUSK_TIME)
+            
+            alpha = int(constantes.MAX_DARKNESS * night_progress)
+            
+        else:
+            
+            # Noche (0:00 a 6:00)
+            
+            self.day_overlay.fill(constantes.NIGHT_COLOR)
+            
+            alpha = constantes.MAX_DARKNESS
         
         self.day_overlay.set_alpha(alpha)
         

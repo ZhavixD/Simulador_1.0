@@ -62,6 +62,9 @@ def main():
         if keys[pygame.K_DOWN]:
             character.move(0, 5, world)
         
+        # Actualizar el tiempo del mundo
+        world.update_time(dt)
+        
         status_update_timer += dt
         if status_update_timer >= constantes.STATUS_UPDATE_INTERVAL:
             character.update_status()   # La comida disminuye con el tiempo
@@ -82,9 +85,16 @@ def main():
         food_text   = font.render(f"Food: {int(character.food)}", True, constantes.WHITE)
         thirst_text = font.render(f"Thirst: {int(character.thirst)}", True, constantes.WHITE)
         
-        screen.blit(energy_text, (10, (constantes.ALTO - 70)))
-        screen.blit(food_text,   (10, (constantes.ALTO - 45)))
-        screen.blit(thirst_text, (10, (constantes.ALTO - 20)))
+        # Indicador de tiempo
+        time_of_day = (world.current_time / constantes.DAY_LENGTH) * 24  # Convertir a formato 24 horas
+        time_text = font.render(f"Time: {int(time_of_day):02d}:00", True, constantes.WHITE)
+        
+        
+        screen.blit(energy_text, (10, (constantes.ALTO - 90)))
+        screen.blit(food_text,   (10, (constantes.ALTO - 65)))
+        screen.blit(thirst_text, (10, (constantes.ALTO - 40)))
+        screen.blit(time_text,   (10, (constantes.ALTO - 15)))
+        
         
         pygame.display.flip()
 

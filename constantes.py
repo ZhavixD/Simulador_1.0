@@ -1,10 +1,20 @@
 # tamanos
 ANCHO, ALTO = 800, 600
-PLAYER = 40
+PLAYER = 70
 GRASS  = 64
 TREE   = 64 
 SMALL_STONE = 20
 
+# ANIMACIONES
+BASIC_FRAMES = 6
+IDLE_DOWN  = 0
+IDLE_RIGHT = 1
+IDLE_UP    = 2
+WALK_DOWN  = 3
+WALK_RIGHT = 4
+WALK_UP    = 5
+FRAME_SIZE = 32
+ANIMATION_DELAY = 100  # en milisegundos
 
 #colores
 WHITE = (255, 255, 255)
@@ -33,7 +43,7 @@ DAWN_TIME    = 6000  # Amanecer a las 6:00
 MORNING_TIME = 8000  # Mañana completa a l;as 8:00
 DUSK_TIME    = 18000 # Atardecer a las 18:00
 MIDNIGHT     = 24000 # Medianoche (00:00)
-MAX_DARKNESS = 180   # Nivel maximo de oscuridad (0-255)
+MAX_DARKNESS = 210   # Nivel maximo de oscuridad (0-255)
 
 # Col ores para iluminaciön
 NIGHT_COLOR     = (20, 20, 50)    # Color azul oscuro para la noche
