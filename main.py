@@ -28,7 +28,7 @@ def main():
     while True:
         dt = clock.tick(60)  # Controla los FPS
         
-        # Manejo de eventos ================================================================
+        # Manejo de eventos (TECLAS) ================================================================
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -48,19 +48,22 @@ def main():
                     character.update_thirst(5)
                     
         #=================================================================================
-                
+        dx = dy = 0
+        # Movimiento del personaje  
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            character.move(-5, 0, world)
+            dx = -5
             
         if keys[pygame.K_RIGHT]:
-            character.move(5, 0, world)
+            dx = 5
             
         if keys[pygame.K_UP]:
-            character.move(0, -5, world)
+            dy = -5
             
         if keys[pygame.K_DOWN]:
-            character.move(0, 5, world)
+            dy = 5
+            
+        character.move(dx, dy, world)
         
         # Actualizar el tiempo del mundo
         world.update_time(dt)

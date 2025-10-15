@@ -3,11 +3,53 @@ import constantes
 import random
 import os
 from elements import Tree, SmallStone
-from pygame import surface
+from pygame import Surface
+
+class WorldChunk:
+    ''' Representa un chunk del mundo '''
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width  = width
+        self.height = height
+        
+        # Crear semilla unica basada en las coordenadas del chunk
+        chunk_seed = hash(f"{x},{y}")
+        
+        # Guardar la semilla para uso futuro
+        old_state = random.getstate()
+        
+        # Establecer la semilla del chunk
+        random.seed(chunk_seed)
+        
+        # Generar elementos del chunk (árboles, piedras, etc.)
+        self.trees = [
+            Tree(
+                self.x + random.randint(0, width  - constantes.TREE),
+                self.y + random.randint(0, height - constantes.TREE)
+            ) for _ in range(5)
+        ]
+        
+        self.small_stones = [
+            SmallStone(
+                self.x + random.randint(0, width  - constantes.SMALL_STONE),
+                self.y + random.randint(0, height - constantes.SMALL_STONE)
+            ) for _ in range(10)
+        ]
+        
+        
+        
+        # Restaurar el estado anterior de random
+        random.setstate(old_state)
+        
 
 class World:
     
     def __init__(self, width, height):
+        
+        self.chunk_size = constantes.ANCHO
+        
+        self.active_chunks = {}  # Diccionario para almacenar chunks activos 
         
         self.width  = width
         
@@ -33,6 +75,42 @@ class World:
         
         self.day_overlay.set_alpha(0)  # Completamente transparente al inicio
         
+    
+    def get_chunk(self, x, y):
+        ''' Devuelve el chunk correspondiente a las coordenadas (x, y) '''
+        chunk_x = x // self.chunk_size
+        chunk_y = y // self.chunk_size
+        return (chunk_x, chunk_y)   
+    
+    
+    def generate_chunk(self, chunk_x, chunk_y):
+        ''' Genera un nuevo chunk en las coordenadas dadas '''
+        key = (chunk_x, chunk_y)
+        if key not in self.active_chunks:
+            x = chunk_x * self.chunk_size
+            y = chunk_y * self.chunk_size
+            self.active_chunks[key] = WorldChunk(x, y, self.chunk_size, self.chunk_size)
+            
+            
+    def update_chunks(self, player_x, player_y):
+        '''Actualiza los chunks basado en la posicion del jugador'''
+        current_chunk = self.get_chunk_key(player_x, player_y)
+        
+        # Generar chunks adyacentes
+        for dx in [-2,-1, 0, 1, 2]:
+            for dy in [-2,-1, 0, 1, 2]:
+                chunk_x = current_chunk[0] + dx
+                chunk_y = current_chunk[1] + dy
+                self.generate_chunk(chunk_x, chunk_y)
+                
+        # Eliminar chunks lejanos
+        chunks_to_remove = []
+        for chunk_key in self.active_chunks:
+            distance_x = abs(chunk_key[0] - current_chunk[0])
+            distance_y = abs(chunk_key[1] - current_chunk[1])
+            if distance_x > 2 or distance_y > 2: # Aumentado el rango de eliminacion
+                chunks_to_remove.append(chunk_key)
+                
         
     def update_time(self,dt):
         
