@@ -67,3 +67,23 @@ STAMINA_DECREASE_RATE = 0.05
 STAMINA_INCREASE_RATE = 0.02
 RUN_FOOD_DECREASE_MULTIPLIER = 2.0
 RUN_THIRST_DECREASE_MULTIPLIER = 2.0
+
+# Inventory constantes
+SLOT_SIZE    = 64
+HOTBAR_SLOTS = 8
+INVENTORY_ROWS = 4
+INVENTORY_COLS = 5
+MARGIN = 10
+
+# Hotbar position (siempre visible abajo)
+HOTBAR_Y = ALTO - SLOT_SIZE - MARGIN
+HOTBAR_X = (ANCHO - (SLOT_SIZE * HOTBAR_SLOTS)) // 2
+
+# Main inventory position (siempre visible arriba)
+INVENTORY_X = (ANCHO - (SLOT_SIZE * INVENTORY_COLS)) // 2
+INVENTORY_Y = (ALTO  - (SLOT_SIZE * INVENTORY_ROWS)) // 2
+
+# Colors for inventory 
+SLOT_COLOR  = (139, 139, 139) # Gris oscuro
+SLOT_BORDER = (100, 100, 100) # Gris claro
+SLOT_HOVER  = (160, 160, 160) # Gris medio

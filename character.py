@@ -2,12 +2,13 @@ import pygame
 import constantes
 import os
 from constantes import *
+from inventory import Inventory
 
 class Character:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.inventory = {"wood": 0, "stone": 0}
+        self.inventory = Inventory()
         
         # Cargar la hoja de animaciones
         image_path = os.path.join('assets', 'images', 'characters', 'Player.png')
@@ -153,40 +154,26 @@ class Character:
         for tree in world.trees:
             if self.is_near(tree):
                 if tree.chop():
-                    self.inventory['wood'] += 1
+                    self.inventory.add_item('wood')
                 return
             
         for stone in world.small_stones:
             if self.is_near(stone): 
                 if stone.collect():
                     
-                    self.inventory['stone'] += 1
+                    self.inventory.add_item('stone')
                 return
             
 
-    def draw_inventory(self, screen):
-        background = pygame.Surface((constantes.ANCHO, constantes.ALTO), pygame.SRCALPHA)
-        background.fill((0, 0, 0, 128)) # Fondo semitransparente
-        screen.blit(background, (0, 0)) # Dibujar el fondo de inventario  
+    def draw_inventory(self, screen, show_inventory = False):
+        # Dibujar el inventario
+        self.inventory.draw(screen, show_inventory)
         
-        font = pygame.font.Font(None, 36)
-        title = font.render("Inventory", True, constantes.WHITE)
-        screen.blit(title, (constantes.ANCHO // 2 - title.get_width() // 2, 20)) # Título centrado
-        
-        item_font = pygame.font.Font(None, 24)
-        y_offset = 80
-        for item, quantity in self.inventory.items():
-            if quantity > 0:
-                screen.blit(self.item_images[item], (constantes.ANCHO // 2 - 60, y_offset))
-                
-                text = item_font.render(f"{item.capitalize()}: {quantity}", True, constantes.WHITE)
-                screen.blit(text, (constantes.ANCHO // 2 + 10, y_offset + 15))
-                y_offset += 60
-                
-        
-        close_text = item_font.render("Press 'I' to close inventory", True, constantes.WHITE)
-        screen.blit(close_text, (constantes.ANCHO // 2 - close_text.get_width() // 2, constantes.ALTO - 40))
-
+        # Texto de cierre si el inventario esta abierto
+        if show_inventory:
+            font = pygame.font.Font(None, 24)
+            close_text = font.render("Press 'I' to close inventory", True, constantes.WHITE)
+            screen.blit(close_text, (constantes.ANCHO // 2 - close_text.get_width() // 2, constantes.ALTO - 40))
 
     def update_energy(self, amount):
         self.energy = max(0, min(self.energy + amount, constantes.MAX_ENERGY))

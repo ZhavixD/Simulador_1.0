@@ -50,6 +50,12 @@ def main():
                     
                 if event.key == pygame.K_t:
                     character.update_thirst(5)
+            
+            # Manejar eventos del mousepara el inventario
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                character.inventory.handle_click(pygame.mouse.get_pos(), event.button, show_inventory)
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                character.inventory.handle_click(pygame.mouse.get_pos(), event.button, show_inventory)
                     
         #=================================================================================
         dx = dy = 0
@@ -105,12 +111,16 @@ def main():
         if show_inventory:
             character.draw_inventory(screen)
         
-        character.draw_status_bars(screen)
+        # Dibujar inventario (hotbar siempre visible + inventario principal si esta abierto)
+        character.draw_inventory(screen, show_inventory)
         
+        
+        # Dibujar el HUD
         font = pygame.font.SysFont(None, 24)
-        energy_text = font.render(f"Energy: {int(character.energy)}", True, constantes.WHITE)
-        food_text   = font.render(f"Food: {int(character.food)}", True, constantes.WHITE)
-        thirst_text = font.render(f"Thirst: {int(character.thirst)}", True, constantes.WHITE)
+        energy_text  = font.render(f"Energy: {int(character.energy)}", True, constantes.WHITE)
+        food_text    = font.render(f"Food: {int(character.food)}", True, constantes.WHITE)
+        thirst_text  = font.render(f"Thirst: {int(character.thirst)}", True, constantes.WHITE)
+        stamina_text = font.render(f"Stamina: {int(character.stamina)}", True, constantes.WHITE)
         
         # Indicador de tiempo
         time_of_day = (world.current_time / constantes.DAY_LENGTH) * 24  # Convertir a formato 24 horas
