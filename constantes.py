@@ -15,6 +15,7 @@ WALK_RIGHT = 4
 WALK_UP    = 5
 FRAME_SIZE = 32
 ANIMATION_DELAY = 100  # en milisegundos
+RUNNING_ANIMATION_DELAY = 50
 
 #colores
 WHITE = (255, 255, 255)
@@ -27,11 +28,13 @@ GRAY  = (128, 128, 128)
 MAX_ENERGY = 100
 MAX_FOOD   = 100
 MAX_THIRST = 100
+MAX_STAMINA = 100
 
 # Colores para barras de estado
 ENERGY_COLOR   = (255, 215, 0)  # Dorado
 FOOD_COLOR     = (210, 153, 34) # Marrón
 THIRST_COLOR   = (30, 144, 255) # Azul dodger
+STAMINA_COLOR  = (100, 226, 80) # Verde pastel
 BAR_BACKGROUND = (100, 100, 100)   # Fondo gris oscuro
 
 # INTERVALO DE TIEMPO
@@ -56,3 +59,11 @@ THIRST_DECREASE_RATE = 0.2  # Velocidad de disminucion de sed
 ENERGY_DECREASE_RATE = 0.5 # Velocidad de disminucion de energia
 ENERGY_INCREASE_RATE = 0.01 # Velocidad de aumento de energia
 MOVEMENT_ENERGY_COST = 0.01 # Costo de movimiento
+
+# Nuevas constantes para correr
+WALK_SPEED = 5
+RUN_SPEED  = 8
+STAMINA_DECREASE_RATE = 0.05
+STAMINA_INCREASE_RATE = 0.02
+RUN_FOOD_DECREASE_MULTIPLIER = 2.0
+RUN_THIRST_DECREASE_MULTIPLIER = 2.0

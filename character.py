@@ -21,6 +21,7 @@ class Character:
         self.current_state   = IDLE_DOWN
         self.moving      = False
         self.facing_left = False
+        self.is_running  = False
         
         # Load all animations frames
         self.animations = self.load_animation()
@@ -30,9 +31,10 @@ class Character:
             "stone": self.load_items_image("small_stone.png")        
         }
         
-        self.energy = constantes.MAX_ENERGY
-        self.food   = constantes.MAX_FOOD
-        self.thirst = constantes.MAX_THIRST
+        self.energy  = constantes.MAX_ENERGY
+        self.food    = constantes.MAX_FOOD
+        self.thirst  = constantes.MAX_THIRST
+        self.stamina = constantes.MAX_STAMINA
         
         
     def load_animation(self):
@@ -56,7 +58,9 @@ class Character:
     
     def update_animation(self):
         current_time = pygame.time.get_ticks()
-        if current_time - self.animation_timer > self.animation_delay:
+        # Ajustar la velocidad de la animación segun si esta corriendo o caminando
+        animation_speed = RUNNING_ANIMATION_DELAY if self.is_running else ANIMATION_DELAY
+        if current_time - self.animation_timer > animation_speed:
             self.animation_timer = current_time
             self.animation_frame = (self.animation_frame + 1) % 6
             
@@ -83,6 +87,11 @@ class Character:
         self.moving = (dx != 0 or dy != 0)
         
         if self.moving:
+            # Ajustar velocidad segun si corre o camina
+            speed_multiplier = RUN_SPEED if self.is_running and self.is_running and self.stamina > 0 else WALK_SPEED   
+            dx *= speed_multiplier / WALK_SPEED
+            dy *= speed_multiplier / WALK_SPEED
+            
             if dy > 0:
                 self.current_state = WALK_DOWN
                 self.facing_left   = False
@@ -118,7 +127,14 @@ class Character:
         self.update_animation()
         
         # Cuando se mueve pierde energia
-        self.update_energy(- constantes.MOVEMENT_ENERGY_COST)
+        if self.moving:
+            if self.is_running and self.stamina > 0:
+                self.update_stamina(-STAMINA_DECREASE_RATE)
+                self.update_energy(-MOVEMENT_ENERGY_COST * 2)
+            else:
+                self.update_energy(-MOVEMENT_ENERGY_COST)
+                if not self.moving:
+                    self.update_stamina(STAMINA_INCREASE_RATE)
         
         
     def check_collision(self, x, y, obj):
@@ -141,8 +157,9 @@ class Character:
                 return
             
         for stone in world.small_stones:
-            if self.is_near(stone):
+            if self.is_near(stone): 
                 if stone.collect():
+                    
                     self.inventory['stone'] += 1
                 return
             
@@ -181,7 +198,9 @@ class Character:
     
     def update_thirst(self, amount):
         self.thirst = max(0, min(self.thirst + amount, constantes.MAX_THIRST))
-        
+
+    def update_stamina(self, amount):
+        self.stamina = max(0, min(self.stamina + amount, constantes.MAX_STAMINA))   
         
     def draw_status_bars(self, screen):
         bar_width  = 100
@@ -197,27 +216,39 @@ class Character:
                         (x_offset, y_offset, bar_width * (self.energy / constantes.MAX_ENERGY), bar_height))
         
         # Barra de comida
-        # y_offset += 15  
-        pygame.draw.rect(screen, constantes.BAR_BACKGROUND, 
-                        (x_offset, y_offset + 20, bar_width, bar_height))
+        y_offset += 15  
+        pygame.draw.rect(screen, constantes.BAR_BACKGROUND,
+                        (x_offset, y_offset, bar_width, bar_height))
         
         pygame.draw.rect(screen, constantes.FOOD_COLOR, 
-                        (x_offset, y_offset + 20, bar_width * (self.food / constantes.MAX_FOOD), bar_height))
+                        (x_offset, y_offset, bar_width * (self.food / constantes.MAX_FOOD), bar_height))
         
         # Barra de sed
-        # y_offset += 15
-        pygame.draw.rect(screen, constantes.BAR_BACKGROUND, 
-                        (x_offset, y_offset + 40, bar_width, bar_height))
+        y_offset += 15
+        pygame.draw.rect(screen, constantes.BAR_BACKGROUND,
+                        (x_offset, y_offset, bar_width, bar_height))
         
         pygame.draw.rect(screen, constantes.THIRST_COLOR, 
-                        (x_offset, y_offset + 40, bar_width * (self.thirst / constantes.MAX_THIRST), bar_height))
+                        (x_offset, y_offset, bar_width * (self.thirst / constantes.MAX_THIRST), bar_height))
+        
+        # Barra de estamina
+        y_offset += 15
+        pygame.draw.rect(screen, constantes.BAR_BACKGROUND, 
+                        (x_offset, y_offset, bar_width, bar_height))
+        
+        pygame.draw.rect(screen, constantes.STAMINA_COLOR, 
+                        (x_offset, y_offset, bar_width * (self.stamina / constantes.MAX_STAMINA), bar_height))
         
 
     def update_status(self):
+        # Aplicar muiltiplicadores si esta corriendo
+        food_rate   = FOOD_DECREASE_RATE   * (RUN_FOOD_DECREASE_MULTIPLIER if self.is_running else 1)
+        thirst_rate = THIRST_DECREASE_RATE * (RUN_THIRST_DECREASE_MULTIPLIER if self.is_running else 1)
+        
         self.update_food(-constantes.FOOD_DECREASE_RATE)   # La comida disminuye con el tiempo
         self.update_thirst(- constantes.THIRST_DECREASE_RATE)  # La sed disminuye con el tiempo
         
         if self.food < constantes.MAX_FOOD * 0.2 or self.thirst < constantes.MAX_THIRST * 0.2:
             self.update_energy(- constantes.ENERGY_DECREASE_RATE)  # Pierde energía más rápido si tiene poca comida o sed
         else:
-            self.update_energy(constantes.ENERGY_INCREASE_RATE)  
+            self.update_energy(constantes.ENERGY_INCREASE_RATE)
