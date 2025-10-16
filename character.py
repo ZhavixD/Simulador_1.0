@@ -67,11 +67,16 @@ class Character:
         image = pygame.image.load(path).convert_alpha()
         return pygame.transform.scale(image, (40, 40))
         
-    def draw(self, screen):
+    def draw(self, screen, camera_x, camera_y):
+        # Calcular la posición del personaje en la pantalla
+        screen_x = self.x - camera_x
+        screen_y = self.y - camera_y
+        
+        
         current_frame = self.animations[self.current_state][self.animation_frame] # Obtener el frame actual de la animación
         if self.facing_left:
             current_frame = pygame.transform.flip(current_frame, True, False) # Voltear horizontalmente si mira a la izquierda
-        screen.blit(current_frame, (self.x, self.y)) # Dibujar el frame en la posición del personaje
+        screen.blit(current_frame, (screen_x, screen_y)) # Dibujar el frame en la posición del personaje
     
     # Movimiento y colisiones ================================================================
     def move(self, dx, dy, world):
@@ -109,13 +114,11 @@ class Character:
         
         self.x = new_x
         self.y = new_y
-        self.x = max(0, min(self.x, constantes.ANCHO - constantes.PLAYER))
-        self.y = max(0, min(self.y, constantes.ALTO  - constantes.PLAYER))
         
         self.update_animation()
         
         # Cuando se mueve pierde energia
-        self.update_energy(-0.1)
+        self.update_energy(- constantes.MOVEMENT_ENERGY_COST)
         
         
     def check_collision(self, x, y, obj):
@@ -135,14 +138,12 @@ class Character:
             if self.is_near(tree):
                 if tree.chop():
                     self.inventory['wood'] += 1
-                    if tree.wood == 0:
-                        world.trees.remove(tree)
                 return
             
         for stone in world.small_stones:
             if self.is_near(stone):
-                self.inventory['stone'] += stone.stone
-                world.small_stones.remove(stone)
+                if stone.collect():
+                    self.inventory['stone'] += 1
                 return
             
 
@@ -183,10 +184,10 @@ class Character:
         
         
     def draw_status_bars(self, screen):
-        bar_width = 100
+        bar_width  = 100
         bar_height = 10
-        x_offset = 10
-        y_offset = 10
+        y_offset   = 10
+        x_offset   = 10
         
         # Barra de energía
         pygame.draw.rect(screen, constantes.BAR_BACKGROUND, 
@@ -196,7 +197,7 @@ class Character:
                         (x_offset, y_offset, bar_width * (self.energy / constantes.MAX_ENERGY), bar_height))
         
         # Barra de comida
-        y_offset += 15  
+        # y_offset += 15  
         pygame.draw.rect(screen, constantes.BAR_BACKGROUND, 
                         (x_offset, y_offset + 20, bar_width, bar_height))
         
@@ -204,7 +205,7 @@ class Character:
                         (x_offset, y_offset + 20, bar_width * (self.food / constantes.MAX_FOOD), bar_height))
         
         # Barra de sed
-        y_offset += 15
+        # y_offset += 15
         pygame.draw.rect(screen, constantes.BAR_BACKGROUND, 
                         (x_offset, y_offset + 40, bar_width, bar_height))
         
@@ -213,10 +214,10 @@ class Character:
         
 
     def update_status(self):
-        self.update_food(-1)   # La comida disminuye con el tiempo
-        self.update_thirst(-2)  # La sed disminuye con el tiempo
+        self.update_food(-constantes.FOOD_DECREASE_RATE)   # La comida disminuye con el tiempo
+        self.update_thirst(- constantes.THIRST_DECREASE_RATE)  # La sed disminuye con el tiempo
         
         if self.food < constantes.MAX_FOOD * 0.2 or self.thirst < constantes.MAX_THIRST * 0.2:
-            self.update_energy(-0.5)  # Pierde energía más rápido si tiene poca comida o sed
+            self.update_energy(- constantes.ENERGY_DECREASE_RATE)  # Pierde energía más rápido si tiene poca comida o sed
         else:
-            self.update_energy(0.1)  # Pierde energía lentamente con el tiempo
+            self.update_energy(constantes.ENERGY_INCREASE_RATE)  

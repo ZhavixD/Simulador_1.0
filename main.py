@@ -24,6 +24,10 @@ def main():
     show_inventory = False
     
     status_update_timer = 0 # Temporizador para actualizar estado cada segundo
+    
+    # Variables para la camara
+    camera_x = 0
+    camera_y = 0
 
     while True:
         dt = clock.tick(60)  # Controla los FPS
@@ -65,6 +69,13 @@ def main():
             
         character.move(dx, dy, world)
         
+        # La camara sigue al personaje
+        camera_x = character.x - constantes.ANCHO // 2
+        camera_y = character.y - constantes.ALTO // 2
+        
+        # Actualizar los chunks del mundo basado en la posicion del jugador
+        world.update_chunks(character.x, character.y)
+        
         # Actualizar el tiempo del mundo
         world.update_time(dt)
         
@@ -78,10 +89,19 @@ def main():
             pygame.quit()
             sys.exit()
             
-        world.draw(screen)
-        character.draw(screen)
+        # Limpiar la pantalla
+        screen.fill((0, 0, 0))
+        
+        # Dibujar mundo con offser de camara
+        world.draw(screen, camera_x, camera_y)
+        
+        # Dibujar el personaje con offset de camara
+        character.draw(screen, camera_x, camera_y)
+        
         if show_inventory:
             character.draw_inventory(screen)
+        
+        character.draw_status_bars(screen)
         
         font = pygame.font.SysFont(None, 24)
         energy_text = font.render(f"Energy: {int(character.energy)}", True, constantes.WHITE)

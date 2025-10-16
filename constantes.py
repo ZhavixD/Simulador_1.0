@@ -1,5 +1,5 @@
 # tamanos
-ANCHO, ALTO = 800, 600
+ANCHO, ALTO = 1280, 720
 PLAYER = 70
 GRASS  = 64
 TREE   = 64 
@@ -30,7 +30,7 @@ MAX_THIRST = 100
 
 # Colores para barras de estado
 ENERGY_COLOR   = (255, 215, 0)  # Dorado
-FOOD_COLOR     = (34, 139, 34)  # Verde bosque
+FOOD_COLOR     = (210, 153, 34) # Marrón
 THIRST_COLOR   = (30, 144, 255) # Azul dodger
 BAR_BACKGROUND = (100, 100, 100)   # Fondo gris oscuro
 
@@ -38,14 +38,21 @@ BAR_BACKGROUND = (100, 100, 100)   # Fondo gris oscuro
 STATUS_UPDATE_INTERVAL = 1000  # en milisegundos
 
 # SISTEMA dia/noche
-DAY_LENGTH   = 24000 # Druracion del dia completo en ms (24 segundos)
-DAWN_TIME    = 6000  # Amanecer a las 6:00
-MORNING_TIME = 8000  # Mañana completa a l;as 8:00
-DUSK_TIME    = 18000 # Atardecer a las 18:00
-MIDNIGHT     = 24000 # Medianoche (00:00)
-MAX_DARKNESS = 210   # Nivel maximo de oscuridad (0-255)
+DAY_LENGTH   = 240000 # Druracion del dia completo en ms (24 segundos)
+DAWN_TIME    = 60000  # Amanecer a las 6:00
+MORNING_TIME = 80000  # Mañana completa a l;as 8:00
+DUSK_TIME    = 180000 # Atardecer a las 18:00
+MIDNIGHT     = 240000 # Medianoche (00:00)
+MAX_DARKNESS = 2100   # Nivel maximo de oscuridad (0-255)
 
 # Col ores para iluminaciön
 NIGHT_COLOR     = (20, 20, 50)    # Color azul oscuro para la noche
 DAY_COLOR       = (255, 255, 255) # Color blanco para eI dia
 DAWN_DUSK_COLOR = (255, 193, 137) # Color anaranjado para amanecer/atardecer
+
+# Velocidades de dismision de estados
+FOOD_DECREASE_RATE   = 0.1  # Velocidad de disminucion de comida
+THIRST_DECREASE_RATE = 0.2  # Velocidad de disminucion de sed
+ENERGY_DECREASE_RATE = 0.5 # Velocidad de disminucion de energia
+ENERGY_INCREASE_RATE = 0.01 # Velocidad de aumento de energia
+MOVEMENT_ENERGY_COST = 0.01 # Costo de movimiento
