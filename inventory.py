@@ -230,4 +230,4 @@ class Inventory:
                     self.inventory[row][col] = self.dragged_item
                     self.dragged_item = None
                     return
-        
+        # FIN
